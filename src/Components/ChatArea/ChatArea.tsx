@@ -4,7 +4,7 @@ import io from "socket.io-client";
 
 export const ChatArea: FC = () => {
     const [users, setUsers] = useState([]);
-    const socket = io("http://localhost:5000/");
+    const socket = io("https://socket-io-server-gilt.vercel.app/");
     useEffect(() => {
 
         const username = prompt("enter your username");
