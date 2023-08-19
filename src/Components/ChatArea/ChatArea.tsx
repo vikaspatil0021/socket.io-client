@@ -5,7 +5,7 @@ import io from "socket.io-client";
 export const ChatArea: FC = () => {
     const [users, setUsers] = useState([]);
     const socket = io("https://socket-io-server-gilt.vercel.app",{
-        transports: ['websocket',  'polling'],
+        transports: [  'polling','websocket']
 
     });
     useEffect(() => {
