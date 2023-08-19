@@ -6,7 +6,7 @@ export const ChatArea: FC = () => {
     const [users, setUsers] = useState([]);
     const socket = io("https://socket-io-server-gilt.vercel.app/",{
         path: '/socket.io',
-        transports: ['websocket'],
+        transports: ['websocket',  'polling'],
         secure: true,
 
     });
