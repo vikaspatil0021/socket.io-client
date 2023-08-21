@@ -6,7 +6,9 @@ export const ChatArea: FC = () => {
     const [users, setUsers] = useState([]);
     const socket = io("wss://rambunctious-chivalrous-truffle.glitch.me/",{
         transports: ['websocket',  'polling'],
-
+        extraHeaders:{
+            "user-agent":"mozilla"
+        }
     });
     useEffect(() => {
 
