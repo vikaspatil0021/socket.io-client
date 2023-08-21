@@ -10,6 +10,12 @@ export const ChatArea: FC = () => {
             "user-agent":"mozilla"
         }
     });
+    
+    socket.io.on("error", (error) => {
+        console.log(error)
+      });
+
+
     useEffect(() => {
 
         const username = prompt("enter your username");
