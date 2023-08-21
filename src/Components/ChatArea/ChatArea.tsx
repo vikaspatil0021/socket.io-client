@@ -4,7 +4,7 @@ import io from "socket.io-client";
 
 export const ChatArea: FC = () => {
     const [users, setUsers] = useState([]);
-    const socket = io("wss://socket-io-server-gilt.vercel.app/",{
+    const socket = io("wss://rambunctious-chivalrous-truffle.glitch.me/",{
         transports: ['websocket',  'polling'],
         extraHeaders:{
             "user-agent":"mozilla"
