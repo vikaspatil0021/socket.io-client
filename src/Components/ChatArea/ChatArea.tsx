@@ -4,10 +4,7 @@ import io from "socket.io-client";
 
 export const ChatArea: FC = () => {
     const [users, setUsers] = useState([]);
-    const socket = io("wss://rambunctious-chivalrous-truffle.glitch.me/",{
-        transports: ['websocket', 'polling'],
-
-    });
+    const socket = io("wss://rambunctious-chivalrous-truffle.glitch.me/");
     useEffect(() => {
 
         const username = prompt("enter your username");
