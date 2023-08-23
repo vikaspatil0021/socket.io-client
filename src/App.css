@@ -7,3 +7,17 @@
     font-weight: bold;
     text-align: center;
 }
+
+#inputDiv{
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    width: 100%;
+}
+
+#inputDiv input{
+    all: unset;
+    background-color: #b8b5b5;
+    width: calc(100% - 20px);
+    padding: 10px;
+}
