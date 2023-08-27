@@ -1,8 +1,8 @@
 import React, { FC, useEffect, useState } from 'react';
 import io from "socket.io-client";
 
-// const socket = io("ws://localhost:5000", {
-    const socket = io("wss://rambunctious-chivalrous-truffle.glitch.me/", {
+const socket = io("ws://localhost:5000", {
+    // const socket = io("wss://rambunctious-chivalrous-truffle.glitch.me/", {
 
     transports: ['websocket', 'polling'],
     extraHeaders: {
@@ -14,13 +14,24 @@ export const ChatArea: FC = () => {
     const [users, setUsers] = useState([]);
     const [msg, setMsg] = useState('');
     const [userName, setUserName] = useState('');
+    const [chats,setChats] = useState([{
+        username:'',
+        msg:''
+    }]);
 
 
     socket.io.on("error", (error) => {
-        console.log(error)
+        console.log(error);
     });
 
+    useEffect(()=>{
+        if(chats[0]?.username!='' && chats[0]?.msg!=''){
 
+            chats.forEach(element => {
+            userupdate(element?.username, element?.msg);
+        });
+    }
+    },[chats])
     useEffect(() => {
 
         const username = prompt("enter your username");
@@ -29,6 +40,7 @@ export const ChatArea: FC = () => {
             socket.emit("join room", username);
             console.log('ji')
         }
+          
         socket.on('new user', newUsername => {
             userupdate(newUsername, "JUST JOINED");
             console.log('new user')
@@ -44,6 +56,10 @@ export const ChatArea: FC = () => {
             userupdate(data.userName, data.msg);
     
         });
+
+        socket.on("get chats",(arr)=>{
+            setChats(arr);
+        })
         socket.on('update users', data => {
             setUsers(data);
         });
@@ -109,14 +125,17 @@ export const ChatArea: FC = () => {
             {/* part2 chatting page */}
             <div id='chatsDiv' style={{
                 width: "75vw",
-                height: "calc(100vh - 40px)",
+                height: "calc(100vh - 80px)",
                 padding: "20px",
-                position: "relative"
+                position: "relative",
+                overflow:"auto",
             }}>
                 <h2 style={{
                     padding: "0",
                     margin: "0 0 10px 0"
                 }}>Welcome to the vedham chatroom</h2>
+                
+            </div>
                 <div id='inputDiv'>
                     <form onSubmit={sendMessage}>
 
@@ -125,7 +144,6 @@ export const ChatArea: FC = () => {
                         }} value={msg} />
                     </form>
                 </div>
-            </div>
         </div>
     )
 }
