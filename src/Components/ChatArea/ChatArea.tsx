@@ -1,8 +1,8 @@
 import React, { FC, useEffect, useState } from 'react';
 import io from "socket.io-client";
 
-// const socket = io("ws://localhost:5000", {
-    const socket = io("wss://rambunctious-chivalrous-truffle.glitch.me/", {
+const socket = io("ws://localhost:5000", {
+    // const socket = io("wss://rambunctious-chivalrous-truffle.glitch.me/", {
 
     transports: ['websocket', 'polling'],
     extraHeaders: {
@@ -11,106 +11,105 @@ import io from "socket.io-client";
 });
 
 export const ChatArea: FC = () => {
-    const [users, setUsers] = useState([]);
+    let userId0 = localStorage.getItem("userId")
     const [msg, setMsg] = useState('');
     const [userName, setUserName] = useState('');
-    const [chats,setChats] = useState([{
-        username:'',
-        msg:''
-    }]);
+    const [activeRoom, setActiveRoom] = useState("");
+   
+    
 
 
     socket.io.on("error", (error) => {
         console.log(error);
     });
 
-    useEffect(()=>{
-        if(chats[0]?.username!='' && chats[0]?.msg!=''){
+    
 
-            chats.forEach(element => {
-            userupdate(element?.username, element?.msg);
-        });
-    }
-    },[chats])
     useEffect(() => {
+        if (!userId0) {
 
-        const username = prompt("enter your username");
-        if (username) {
-            setUserName(username);
-            socket.emit("join room", username);
-            console.log('ji')
+
+            const username = prompt("enter your username");
+            if (username) {
+                setUserName(username);
+                socket.emit("userAuth", { username });
+            }
+            socket.on("userAuth", (userId) => {
+                console.log(userId);
+                localStorage.setItem("userId", userId);
+                window.location.reload();
+            })
+
         }
-          
-        socket.on('new user', newUsername => {
-            userupdate(newUsername, "JUST JOINED");
-            console.log('new user')
-    
-        });
-        socket.on('user left', username => {
-            userupdate(username, "LEFT THE CHAT");
-            console.log('user left')
-    
-        });
-    
-        socket.on('newMessage', data => {
-            userupdate(data.userName, data.msg);
-    
+        socket.on('Room detail',(data)=>{
+            const allRoomsDiv  = document.querySelector(".allUsers");
+            
+            const div   = document.createElement("div");
+            div.style.cssText = "margin:15px 0;cursor:pointer;";
+            div.innerHTML = data._id;
+
+            const lastActive = document.querySelector(".blue");
+            lastActive?.classList.remove("blue");
+            div.classList.add('blue');
+
+            allRoomsDiv?.appendChild(div);
+            setActiveRoom(data._id);
         });
 
-        socket.on("get chats",(arr)=>{
-            setChats(arr);
+
+        socket.on('newMessage',(message)=>{
+            console.log(message)
+            const mainDiv = document.querySelector('#chatsDiv');
+
+            const div   = document.createElement("div");
+            div.classList.add('newChat');
+
+            div.innerHTML = message.userId + ' - ' + message.msg;
+
+            mainDiv?.appendChild(div);
         })
-        socket.on('update users', data => {
-            setUsers(data);
-        });
+       
     }, [])
 
-
-    // function to return html
-    const userupdate = (newUsername: string, status: string) => {
-
-        const chatsDiv: any = document.querySelector("#chatsDiv");
-        const div = document.createElement("div");
-        div.classList.add("newChat");
-        div.innerHTML = `${newUsername} -----> ${status}`;
-        chatsDiv?.appendChild(div);
-    }
 
 
 
     // on sumbit send message handler
     const sendMessage = (e: any) => {
         e.preventDefault();
-        if (msg != '') socket.emit("user message", { userName, msg });
+        if (msg != '') socket.emit("new message", { userId0, msg ,activeRoom});
         setMsg('')
     }
+
+    const newChatRoom = () => {
+        const otherUsername = prompt('Enter the other persons username');
+        socket.emit("create room", { otherUsername, userId0 })
+    }
+
+
+    const allDiv = document.querySelectorAll('.allUsers div');
+    allDiv.forEach(each=>{
+        each.addEventListener('click',(e)=>{
+            setActiveRoom(each.innerHTML);
+            const lastActive = document.querySelector(".blue");
+            lastActive?.classList.remove("blue");
+
+            each.classList.add('blue');
+        })
+    })
 
     return (
         <div style={{
             display: "flex",
             position: 'relative'
         }}>
-            <div style={{
-                width: "25vw",
-                backgroundColor: "#222",
-                height: "calc(100vh - 30px)",
-                padding: "15px",
-                overflow: "auto"
-            }}>
-                {users.map(each => {
-                    return (
-                        <div style={{
-                            padding: "10px 15px",
-                            borderRadius: "10px",
-                            backgroundColor: "#555",
-                            margin: "0 0 10px 0",
-                            color: "#f2f2f2",
-                            fontWeight: "bold"
-                        }}>
-                            {each}
-                        </div>
-                    )
-                })}
+            <div className='usersDiv'>
+                <div className='newUserBtn' onClick={newChatRoom}>
+                    + New
+                </div>
+                <div className='allUsers'>
+                    
+                </div>
             </div>
 
 
@@ -123,27 +122,21 @@ export const ChatArea: FC = () => {
 
 
             {/* part2 chatting page */}
-            <div id='chatsDiv' style={{
-                width: "75vw",
-                height: "calc(100vh - 80px)",
-                padding: "20px",
-                position: "relative",
-                overflow:"auto",
-            }}>
+            <div id='chatsDiv'>
                 <h2 style={{
                     padding: "0",
                     margin: "0 0 10px 0"
-                }}>Welcome to the vedham chatroom</h2>
-                
-            </div>
-                <div id='inputDiv'>
-                    <form onSubmit={sendMessage}>
+                }}>Welcome {userId0} to the vedham chatroom</h2>
 
-                        <input type='text' onChange={(e) => {
-                            setMsg(e.target.value)
-                        }} value={msg} />
-                    </form>
-                </div>
+            </div>
+            <div id='inputDiv'>
+                <form onSubmit={sendMessage}>
+
+                    <input type='text' onChange={(e) => {
+                        setMsg(e.target.value)
+                    }} value={msg} />
+                </form>
+            </div>
         </div>
     )
 }

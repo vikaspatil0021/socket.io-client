@@ -8,16 +8,61 @@
     text-align: center;
 }
 
-#inputDiv{
+#inputDiv {
     position: absolute;
     bottom: 0px;
     left: 0px;
     width: 100%;
 }
 
-#inputDiv input{
+#inputDiv input {
     all: unset;
     background-color: #b8b5b5;
     width: calc(100% - 20px);
     padding: 10px;
+}
+
+#chatsDiv {
+    width: 75vw;
+    height: calc(100vh - 80px);
+    padding: 20px;
+    position: relative;
+    overflow: auto;
+}
+
+.usersDiv {
+    width: 25vw;
+    background-color: #333;
+    height: calc(100vh - 30px);
+    max-height: calc(100vh - 30px);
+
+    padding: 15px;
+    position: relative;
+}
+.allUsers{
+    overflow: auto;
+    height: 1000px;
+    max-height: calc(100% - 60px);
+    padding: 20px 0;
+    color:white;
+}
+.newUserBtn{
+    display: flex;
+    justify-content: center;
+    background-color: #000;
+    border: 1px solid #888;
+    color: #f2f2f2;
+    border-radius: 10px;
+    cursor: pointer;
+    padding: 5px 10px;
+    font-size: 15px;
+    font-weight: semibold;
+}
+
+.newUserBtn:hover{
+    background-color: #111;
+
+}
+.blue{
+    color: rgb(150, 240, 250);
 }
