@@ -1,5 +1,6 @@
 import React, { FC } from 'react';
 import './App.css';
+import { ChatArea } from './Components/ChatArea/ChatArea';
 
 const App: FC = () => {
   return (
